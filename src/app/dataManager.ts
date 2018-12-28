@@ -1,4 +1,5 @@
 const xhr = require('nets');
+import * as Pathway from './pathway';
 
 export class DataManager {
     
@@ -44,9 +45,26 @@ export class DataManager {
     //Formater for GET. Passed as param to query
     let get_format = async function(id:string){
         let url = 'http://rest.kegg.jp/get/'+ id + '/kgml';
-        let rawData = await query(url);
-        console.log(rawData);
-        return rawData;
+        let proxy = 'https://cors-anywhere.herokuapp.com/';
+     
+        let data = xhr({
+                url: proxy + url,
+                method: 'GET',
+                encoding: undefined,
+                headers: {
+                    "Content-Type": "application/json"
+                
+                }
+            }, 
+            function done(err, resp, body){
+                
+                if(err){ 
+                    console.error(err); 
+                    return;
+                }
+                
+                return resp.rawRequest.responseXML;
+            });
     }
 
     //Formater for CONVERT. Passed as param to query
@@ -71,6 +89,7 @@ export class DataManager {
                     console.error(err); 
                     return;
                 }
+            
                 // v this consoles what I want v 
                 console.log(resp.rawRequest.responseText);
                 return resp;
@@ -78,9 +97,9 @@ export class DataManager {
                 
                 );
                  // v this throws cannot reads responseText of undefined what v 
-                console.log(data.rawRequest.responseText);
+                console.log(data);
                
-                return data.rawRequest.responseText;
+                return data;
     }
 
     let grabber = function(list:any){
