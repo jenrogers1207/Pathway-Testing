@@ -1,7 +1,7 @@
 {
-    "name": "fe_project_starter",
+    "name": "Pathway-Testing",
     "version": "1.0.0",
-    "description": "Front End Project Typescript starter. Contains webpack setup for scss, html-loader, TS-transpiler, lite-server.",
+    "description": "Testing For Pathway Application Development",
     "main": "index.js",
     "scripts": {
         "build": "npm install && webpack",
@@ -10,14 +10,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/kirangadhave/fe_project_starter.git"
+        "url": "git+https://github.com/jenrogers1207/Pathway-Testing.git"
     },
-    "author": "Kiran B. Gadhave <kirangadhave2@gmail.com>",
+    "author": "Jen Rogers <jen@sci.utah.edu>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/kirangadhave/Pathways/issues"
+        "url": "https://github.com/jenrogers1207/Pathway-Testing"
     },
-    "homepage": "https://github.com/kirangadhave/fe_project_starter#readme",
+    "homepage": "https://github.com/jenrogers1207/Pathway-Testing",
     "devDependencies": {
         "@types/request": "^2.48.1",
         "@types/request-promise-native": "^1.0.15",
