@@ -1,17 +1,14 @@
 const xhr = require('nets');
 import * as Pathway from './pathway';
 
+const pathways = new Pathway.Pathway()
+
 export class DataManager {
     
     GET: any;
     LINK: any;
     CONVERT: any;
-    private type;
     pathway : string;
-    private expression;
-    private cy;
-    private conditions;
-    private interval;
     query: any;
     keggID: string;
   
@@ -23,14 +20,8 @@ export class DataManager {
         this.CONVERT = conv_format;
         //KEGG pathways linked from a human gene
         this.LINK = link_format;
+
         this.query = query;
-        this.type = 'path:';
-        //this.pathway = 'mmu03440';
-        this.pathway = 'hsa04910';
-        this.expression = null;
-        this.cy = null;
-        this.conditions = null;
-        this.interval = null;
         this.keggID = '';
     }
 
@@ -62,8 +53,8 @@ export class DataManager {
                     console.error(err); 
                     return;
                 }
-                
-                return resp.rawRequest.responseXML;
+                pathways.pathProcess(resp.rawRequest.responseXML).then(p=> pathways.pathRender(p));
+                //return resp.rawRequest.responseXML;
             });
     }
 

@@ -19,11 +19,13 @@
     },
     "homepage": "https://github.com/jenrogers1207/Pathway-Testing",
     "devDependencies": {
+        "@types/d3": "^5.5.0",
         "@types/request": "^2.48.1",
         "@types/request-promise-native": "^1.0.15",
         "autoprefixer": "8.6.5",
         "awesome-typescript-loader": "5.2.0",
         "css-loader": "1.0.0",
+        "d3": "^5.7.0",
         "del-webpack-plugin": "1.0.6",
         "eslint": "5.1.0",
         "html-loader": "0.5.5",
