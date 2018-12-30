@@ -46,7 +46,9 @@ export class DataManager {
                     console.error(err); 
                     return;
                 }
-                pathways.pathProcess(resp.rawRequest.responseXML).then(p=> pathways.pathRender(p));
+                pathways.pathProcess(resp.rawRequest.responseXML).then(p=> {
+                    console.log(p);
+                    pathways.pathRender(p)});
                 //return resp.rawRequest.responseXML;
             });
     }
@@ -75,8 +77,8 @@ export class DataManager {
                 }
             
                 // v this consoles what I want v 
-                let idArray = await grabId(resp.rawRequest.responseText);
-                link_format(idArray);
+                grabId(resp.rawRequest.responseText).then(ids=> link_format(ids));
+               
                 return resp;
                 }
                 
@@ -87,44 +89,65 @@ export class DataManager {
                 return data;
     }
 
-    let grabId = function(list:any){
+    let grabId = async function(list:any){
         let stringArray = new Array();
-        console.log(list);
+       
         list = list.split(/(\s+)/);
-                
-                for(var i =0; i < list.length; i++){
-                    if(list[i].length > 1){
-                        stringArray.push(list[i]);
-                    }
-                };
-                
-                this.keggID = stringArray[1];
-                console.log(this.keggID);
-                return stringArray;
+  
+        for(var i =0; i < list.length; i++){
+            if(list[i].length > 1){
+                stringArray.push(list[i]);
+                }
+            };
+            
+            return stringArray;
     }
 
-    let renderText = function(idArray: Array<string>){
-        let div = d3.select(document.getElementById('linked-pathways'));
-        for(let id in idArray){
-            div.append('text').text(id);
+    let renderText = async function(idArray: Array<string>, response: string){
+        
+        let splits = await grabId(response);
+        let id_link = splits[0];
+        splits = splits.filter(d=> d != id_link);
+
+        let divID = d3.select(document.getElementById('gene-id'));
+        divID.selectAll('*').remove();
+
+        let divLink = d3.select(document.getElementById('linked-pathways'));
+        divLink.selectAll('*').remove();
+
+        divLink.append('div').append('h2').text('Associated Pathways: ');
+        if(idArray.length > 1){
+            divID.append('span').append('text').text('Search ID: ')
+            divID.append('text').text(idArray[0] + '   ');
+            
         }
+        divID.append('span').append('text').text('Kegg ID: ')
+        divID.append('text').text(id_link);
+
+        let div = divLink.selectAll('div').data(splits);
+        div.exit().remove();
+        let divEnter = div.enter().append('div').classed('path-link', true);
+        div = divEnter.merge(div);
+
+        let text = divEnter.append('text').text(d=> d);
+        text.on('click', (id)=> get_format(id));
         
     }
 
     //Formater for LINK. Passed as param to query
     let link_format = function(idArray: Array<string>){
         let keggId = null;
-       
+        
         if(idArray.length > 1){
             keggId = idArray[1];
         }else{
             keggId = idArray[0];
         }
-
+        
         let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
         let proxy = 'https://cors-anywhere.herokuapp.com/';
      
-        let data = await xhr({
+        let data = xhr({
                 url: proxy + url,
                 method: 'GET',
                 encoding: undefined,
@@ -132,15 +155,14 @@ export class DataManager {
                     "Content-Type": "text/plain"
                 }
             }, 
-            await function done(err, resp, body){
+            function done(err, resp, body){
                 if(err){ 
                     console.error(err); 
                     return;
                 }
             
                 // v this consoles what I want v 
-                console.log(resp.rawRequest.responseText);
-                renderText(idArray);
+                renderText(idArray, resp.rawRequest.responseText);
 
                 return resp;
                 }
