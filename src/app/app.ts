@@ -16,7 +16,7 @@ function searchById() {
     if(value.includes('ncbi-geneid')){
         dm.CONVERT(value);
     }else{
-        dm.LINK(value);
+        dm.LINK([value]);
     }
 
   

@@ -3,7 +3,8 @@ import * as d3 from 'D3';
 
 class PathwayObject {
 
-    name: string;
+    id: string;
+    title: string;
     paths: any;
     positions: Dictionary<any>; 
     node_map: Dictionary<any>; 
@@ -35,7 +36,7 @@ class Node{
     
     constructor() {
         this.shape = 'rectangle';
-        this.bkg_color = '#99ff99';
+        this.bkg_color = '#ccf2cc';
         this.text_valign = 'center';
         this.border_width = 0;
         this.width;
@@ -127,13 +128,16 @@ export class Pathway {
                 edge.target_arrow_shape = 'triangle';
                 edge.text = 'p-';
             }else if(edge.name == 'glycosylation'){
-                edge.line_style = 'dashed';
+                //edge.line_style = 'dashed';
+                edge.text = 'g+';
                 edge.target_arrow_shape = 'circle';
             }else if(edge.name == 'ubiquitination'){
-                edge.line_style = 'dashed';
+                edge.text = 'u+';
+               // edge.line_style = 'dashed';
                 edge.target_arrow_shape = 'circle';
             }else if(edge.name == 'methylation'){
-                edge.line_style = 'dashed';
+                edge.text = 'm+';
+               // edge.line_style = 'dashed';
                 edge.target_arrow_shape = 'circle';
             }else if(edge.name == 'activation'){
                 edge.target_arrow_shape = 'triangle';
@@ -153,10 +157,13 @@ export class Pathway {
     async function pathProcess(xmlData: any){
         let pathway = new PathwayObject();
 
+       
         let pathwayInfo = xmlData.getElementsByTagName('pathway');
-
+        console.log(xmlData);
         let pathName = pathwayInfo[0].attributes[0].nodeValue;
-        pathway.name = pathName;
+        let pathTitle = pathwayInfo[0].attributes[3].nodeValue;
+        pathway.id = pathName;
+        pathway.title = pathTitle;
 
         var entries = xmlData.getElementsByTagName('entry');
 
@@ -174,10 +181,12 @@ export class Pathway {
             }else if(node.type === 'group'){
                 let components = entries[i].getElementsByTagName('component');
                 for(let j = 0; j < components.length; j++) {
-                    pathway.node_map[components[j].getAttribute('id')].data.parent = node.id;
+                   // pathway.node_map[components[j].getAttribute('id')].data.parent = node.id;
+                    pathway.node_map[components[j].getAttribute('id')].parent = node.id;
                 };    
             }
-            pathway.node_map[node.id] = {data: node};
+           // pathway.node_map[node.id] = {data: node};
+            pathway.node_map[node.id] = node;
             pathway.nodes.push(pathway.node_map[node.id]);
             let graphics = entries[i].getElementsByTagName('graphics')[0];
             pathway.positions[node.id] = {
@@ -189,17 +198,24 @@ export class Pathway {
         var rels = xmlData.getElementsByTagName('relation');
         for(var i = 0; i < rels.length; i++){
             let edge = await _processRelation(rels[i]);
-            pathway.links.push({
-                data:edge
-            });
+            
+           // pathway.links.push({
+           //     data:edge
+           // });
+            pathway.links.push(edge);
         }
      
         return pathway;
     }
 
     async function pathRender(path){
-        let wrap = document.getElementById('wrapper');
-        let div = d3.select(wrap).append('div').attr('id', path.name).classed('pathway', true);
+        console.log(path);
+        let wrap = d3.select(document.getElementById('pathway-render'));
+        wrap.selectAll('*').remove();
+
+        let div = wrap.append('div').attr('id', path.id).classed('pathway', true);
+        let header = div.append('h3').text(path.id + ': ');
+        header.append('span').append('text').text(path.title);
         let svg = div.append('svg');
         let rects = svg.selectAll('rect');
     }

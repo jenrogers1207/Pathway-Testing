@@ -22,8 +22,7 @@ export class DataManager {
         //KEGG pathways linked from a human gene
         this.LINK = link_format;
 
-        this.query = query;
-        this.keggID = '';
+        //this.query = query;
     }
 
     //Formater for GET. Passed as param to query
@@ -49,7 +48,6 @@ export class DataManager {
                 pathways.pathProcess(resp.rawRequest.responseXML).then(p=> {
                     console.log(p);
                     pathways.pathRender(p)});
-                //return resp.rawRequest.responseXML;
             });
     }
 
@@ -117,11 +115,11 @@ export class DataManager {
 
         divLink.append('div').append('h2').text('Associated Pathways: ');
         if(idArray.length > 1){
-            divID.append('span').append('text').text('Search ID: ')
+            divID.append('span').append('text').text('Search ID:')
             divID.append('text').text(idArray[0] + '   ');
             
         }
-        divID.append('span').append('text').text('Kegg ID: ')
+        divID.append('span').append('text').text('Kegg ID:')
         divID.append('text').text(id_link);
 
         let div = divLink.selectAll('div').data(splits);
@@ -137,12 +135,10 @@ export class DataManager {
     //Formater for LINK. Passed as param to query
     let link_format = function(idArray: Array<string>){
         let keggId = null;
+
+        keggId = (idArray.length > 1) ?  idArray[1] : idArray[0];
         
-        if(idArray.length > 1){
-            keggId = idArray[1];
-        }else{
-            keggId = idArray[0];
-        }
+        console.log(keggId);
         
         let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
         let proxy = 'https://cors-anywhere.herokuapp.com/';
@@ -174,63 +170,6 @@ export class DataManager {
                 return data;
         
     }     
-
-    async function query(url:string){
-        let proxy = 'https://cors-anywhere.herokuapp.com/';
-     
-        let data = xhr({
-                url: proxy + url,
-                method: 'GET',
-                encoding: undefined,
-                headers: {
-                    "Content-Type": "application/json"
-                
-                }
-            }, 
-            function done(err, resp, body){
-                
-                if(err){ 
-                    console.error(err); 
-                    return;
-                }
-                
-                return resp.rawRequest.responseXML;
-            });
-            console.log(data);
-            return data;
-    }
 }
 
-/**
-* Used to query by id for xml data
-* @param command: any
-* @param id : string
-* @returns {Object}
-**/
-export async function queryAPI(command:any, id:string){
-
-    let proxy = 'https://cors-anywhere.herokuapp.com/';
-    let url = proxy + command(id);
-
-    xhr({
-        url: url,
-        method: 'GET',
-        encoding: undefined,
-        headers: {
-            "Content-Type": "application/json"
-           
-          }
-    }, 
-    function done(err, resp, body){
-        
-        if(err){ 
-            console.error(err); 
-            return;
-        }
-        
-        console.log(resp.rawRequest.responseXML);
-        console.log(resp);
-        return resp.rawRequest.responseXML;
-    });
-   
-}
+  
