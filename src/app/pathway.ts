@@ -49,6 +49,18 @@ class Node{
     }
 }
 
+export class Query {
+    keggID: string;
+    NCBIgeneID: string;
+    linkedPaths: Array<string>;
+
+    constructor(){
+        this.keggID;
+        this.NCBIgeneID;
+        this.linkedPaths;
+    }
+}
+
 export class Pathway {
 
     pathwayObjectArray: Array<object>;
@@ -181,12 +193,11 @@ export class Pathway {
                 data:edge
             });
         }
-        console.log(pathway);
+     
         return pathway;
     }
 
     async function pathRender(path){
-        console.log(path);
         let wrap = document.getElementById('wrapper');
         let div = d3.select(wrap).append('div').attr('id', path.name).classed('pathway', true);
         let svg = div.append('svg');

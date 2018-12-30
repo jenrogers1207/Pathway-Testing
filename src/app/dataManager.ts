@@ -1,5 +1,6 @@
 const xhr = require('nets');
 import * as Pathway from './pathway';
+import * as d3 from 'D3';
 
 const pathways = new Pathway.Pathway()
 
@@ -24,14 +25,6 @@ export class DataManager {
         this.query = query;
         this.keggID = '';
     }
-
-    var _finder = function(cmp, arr){
-        var y = arr[0] || null;
-        for(var i = 1; i < arr.length; i++){
-            y = cmp(y, arr[i]);
-        }
-        return y;
-    };
 
     //Formater for GET. Passed as param to query
     let get_format = async function(id:string){
@@ -62,7 +55,7 @@ export class DataManager {
     let conv_format = async function(id:string){
         //NEED TO MAKE THIS SO IT CAN USE OTHER IDS
         let stringArray = new Array();
-        let type = 'genes/ncbi-geneid:'
+        let type = 'genes/'
         let url = 'http://rest.kegg.jp/conv/' + type + id;
  
         let proxy = 'https://cors-anywhere.herokuapp.com/';
@@ -82,7 +75,8 @@ export class DataManager {
                 }
             
                 // v this consoles what I want v 
-                console.log(resp.rawRequest.responseText);
+                let idArray = await grabId(resp.rawRequest.responseText);
+                link_format(idArray);
                 return resp;
                 }
                 
@@ -93,7 +87,7 @@ export class DataManager {
                 return data;
     }
 
-    let grabber = function(list:any){
+    let grabId = function(list:any){
         let stringArray = new Array();
         console.log(list);
         list = list.split(/(\s+)/);
@@ -106,13 +100,57 @@ export class DataManager {
                 
                 this.keggID = stringArray[1];
                 console.log(this.keggID);
-                return stringArray[1];
+                return stringArray;
+    }
+
+    let renderText = function(idArray: Array<string>){
+        let div = d3.select(document.getElementById('linked-pathways'));
+        for(let id in idArray){
+            div.append('text').text(id);
+        }
+        
     }
 
     //Formater for LINK. Passed as param to query
-    let link_format = function(id:string){
-        let url = 'http://rest.kegg.jp/link/pathway/' + id;
-        return url;
+    let link_format = function(idArray: Array<string>){
+        let keggId = null;
+       
+        if(idArray.length > 1){
+            keggId = idArray[1];
+        }else{
+            keggId = idArray[0];
+        }
+
+        let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
+        let proxy = 'https://cors-anywhere.herokuapp.com/';
+     
+        let data = await xhr({
+                url: proxy + url,
+                method: 'GET',
+                encoding: undefined,
+                headers: {
+                    "Content-Type": "text/plain"
+                }
+            }, 
+            await function done(err, resp, body){
+                if(err){ 
+                    console.error(err); 
+                    return;
+                }
+            
+                // v this consoles what I want v 
+                console.log(resp.rawRequest.responseText);
+                renderText(idArray);
+
+                return resp;
+                }
+                
+                );
+                 // v this throws cannot reads responseText of undefined what v 
+                console.log(data);
+               
+                return data;
+        
     }     
 
     async function query(url:string){

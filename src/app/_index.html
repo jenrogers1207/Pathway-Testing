@@ -5,12 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Document</title>
 </head>
 
 <body>
     <div id='wrapper'>
-
+        <div class="topnav">
+            <form class="search-container">
+                <input type="text" id="search-bar" placeholder="search with ncbi-geneid: or kegg id">
+                <a href="#"><img class="search-icon" src="http://www.endlessicons.com/wp-content/uploads/2012/12/search-icon.png"></a>
+            </form>
+        </div>
+        <div id='gene-id'></div>
+        <div id='linked-pathways'></div>
     </div>
 </body>
 
