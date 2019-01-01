@@ -208,8 +208,8 @@ export class Pathway {
         return pathway;
     }
 
-    async function pathRender(path){
-        console.log(path);
+    async function pathRender(path, id: string){
+       
         let wrap = d3.select(document.getElementById('pathway-render'));
         wrap.selectAll('*').remove();
 
@@ -218,5 +218,13 @@ export class Pathway {
         header.append('span').append('text').text(path.title);
         let svg = div.append('svg');
         let rects = svg.selectAll('rect');
+
+        let geneList = path.nodes.filter(d=> d.type == 'gene');
+        console.log(geneList);
+
+        div.append('h4').text('Associated Genes: ');
+
+        let chosen = path.nodes.filter(g=> g.keggId.includes(id));
+        console.log(chosen);
     }
 }

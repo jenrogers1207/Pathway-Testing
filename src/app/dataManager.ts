@@ -47,7 +47,7 @@ export class DataManager {
                 }
                 pathways.pathProcess(resp.rawRequest.responseXML).then(p=> {
                     console.log(p);
-                    pathways.pathRender(p)});
+                    pathways.pathRender(p, id)});
             });
     }
 
@@ -137,8 +137,6 @@ export class DataManager {
         let keggId = null;
 
         keggId = (idArray.length > 1) ?  idArray[1] : idArray[0];
-        
-        console.log(keggId);
         
         let url = 'http://rest.kegg.jp/link/pathway/' + keggId;
         let proxy = 'https://cors-anywhere.herokuapp.com/';
