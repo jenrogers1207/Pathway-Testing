@@ -1,6 +1,8 @@
-Pathway testing stuff.Initial development of pathway tool for genetic analysts. 
+###The Setup:
 
-To Run:
+npm install
 
-npm run-script build
-npm run-script serve
+###To Run:
+
+1. npm run-script build
+2. npm run-script serve
