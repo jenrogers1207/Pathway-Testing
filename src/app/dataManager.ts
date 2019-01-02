@@ -26,7 +26,7 @@ export class DataManager {
     }
 
     //Formater for GET. Passed as param to query
-    let get_format = async function(id:string){
+    let get_format = async function(id:string, geneId:string){
         let url = 'http://rest.kegg.jp/get/'+ id + '/kgml';
         let proxy = 'https://cors-anywhere.herokuapp.com/';
      
@@ -45,9 +45,9 @@ export class DataManager {
                     console.error(err); 
                     return;
                 }
-                pathways.pathProcess(resp.rawRequest.responseXML).then(p=> {
+                pathways.pathProcess(resp.rawRequest.responseXML, geneId).then(p=> {
                     console.log(p);
-                    pathways.pathRender(p, id)});
+                    pathways.pathRender(p)});
             });
     }
 
@@ -128,7 +128,7 @@ export class DataManager {
         div = divEnter.merge(div);
 
         let text = divEnter.append('text').text(d=> d);
-        text.on('click', (id)=> get_format(id));
+        text.on('click', (id)=> get_format(id, id_link));
         
     }
 

@@ -48,6 +48,15 @@ body {
     padding-top: 10px;
 }
 
+.geneNames {
+    font-size: x-small;
+}
+
+.geneNames.selected {
+    color: #008ABF;
+    font-weight: 700;
+}
+
 .path-link {
     margin: 0 auto;
     padding: 5px;

@@ -10,12 +10,14 @@ class PathwayObject {
     node_map: Dictionary<any>; 
     nodes: Array<Node>;
     links: Array<any>;
+    selectedId: string;
     
     constructor() {
         this.positions = {};
         this.node_map = {};
         this.nodes = new Array();
         this.links = new Array();
+        this.selectedId;
     }
 }
 
@@ -29,7 +31,7 @@ class Node{
     height: any;
     type: any;
     id: string;
-    keggId: any;
+    keggId: Array<string>;
     name: any;
     names: any;
     link: any;
@@ -94,7 +96,7 @@ export class Pathway {
        return node;
     };
 
-    function _processRelation(rel){
+    function processRelation(rel){
         var type = rel.getAttribute('type'), subtypes = [];
         
         var subs = rel.getElementsByTagName('subtype');
@@ -154,10 +156,11 @@ export class Pathway {
         };
     };
 
-    async function pathProcess(xmlData: any){
+    async function pathProcess(xmlData: any, selectedId: string){
         let pathway = new PathwayObject();
 
-       
+        pathway.selectedId = selectedId;
+        console.log(selectedId);
         let pathwayInfo = xmlData.getElementsByTagName('pathway');
         console.log(xmlData);
         let pathName = pathwayInfo[0].attributes[0].nodeValue;
@@ -197,7 +200,7 @@ export class Pathway {
 
         var rels = xmlData.getElementsByTagName('relation');
         for(var i = 0; i < rels.length; i++){
-            let edge = await _processRelation(rels[i]);
+            let edge = await processRelation(rels[i]);
             
            // pathway.links.push({
            //     data:edge
@@ -208,7 +211,7 @@ export class Pathway {
         return pathway;
     }
 
-    async function pathRender(path, id: string){
+    async function pathRender(path){
        
         let wrap = d3.select(document.getElementById('pathway-render'));
         wrap.selectAll('*').remove();
@@ -216,15 +219,22 @@ export class Pathway {
         let div = wrap.append('div').attr('id', path.id).classed('pathway', true);
         let header = div.append('h3').text(path.id + ': ');
         header.append('span').append('text').text(path.title);
-        let svg = div.append('svg');
-        let rects = svg.selectAll('rect');
+       // let svg = div.append('svg');
+        //let rects = svg.selectAll('rect');
 
-        let geneList = path.nodes.filter(d=> d.type == 'gene');
+        let geneList = path.nodes.filter((d)=> d.type == 'gene');
         console.log(geneList);
 
         div.append('h4').text('Associated Genes: ');
+        let geneDivs = div.selectAll('.geneNames').data(geneList);
+        let geneEnter = geneDivs.enter().append('div').classed('geneNames', true);
+        geneDivs.exit().remove();
+        geneDivs = geneEnter.merge(geneDivs);
+        geneDivs.append('text').text((d)=> d.name);
+        let selectedGene = geneDivs.filter((g)=> g.keggId.includes(path.selectedId));
+        selectedGene.classed('selected', true);
 
-        let chosen = path.nodes.filter(g=> g.keggId.includes(id));
+        let chosen = path.nodes.filter((g)=> g.keggId.includes(path.selectedId));
         console.log(chosen);
     }
 }

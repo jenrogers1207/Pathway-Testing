@@ -10,6 +10,9 @@ const dm = new DM.DataManager();
 d3.select('.search-icon').on('click', ()=> searchById());
 
 function searchById() {
+    
+    d3.select('#linked-pathways').selectAll('*').remove();
+    d3.select('#pathway-render').selectAll('*').remove();
 
     const value = (<HTMLInputElement>document.getElementById('search-bar')).value;
    
