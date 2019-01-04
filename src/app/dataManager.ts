@@ -45,11 +45,108 @@ export class DataManager {
                     console.error(err); 
                     return;
                 }
+                
                 pathways.pathProcess(resp.rawRequest.responseXML, geneId).then(p=> {
                     console.log(p);
-                    pathways.pathRender(p)});
+                    loadImage(id).then(image=> {
+
+                        pathways.pathRender(p)});
+                    });
+                    
+                    
             });
     }
+
+        //Formater for GET. Passed as param to query
+        let get_image_format = async function(id:string){
+            let url = 'http://rest.kegg.jp/get/'+ id + '/image';
+            let proxy = 'https://cors-anywhere.herokuapp.com/';
+         
+            let data = xhr({
+                    url: proxy + url,
+                    method: 'GET',
+                    encoding: undefined,
+                    headers: {
+                        "Content-Type": "image/png",
+                    },
+                    responseType: 'blob',
+
+                }, 
+                function done(err, resp, body){
+                    
+                    if(err){ 
+                        console.error(err); 
+                        return;
+                    }
+                    console.log(resp.url);
+                   
+                        var img = document.createElement('img');
+                       // img.src = window.URL.createObjectURL(resp.url);
+                        img.src = resp.url;
+                        document.getElementById("pathway-render").appendChild(img);
+                    
+                });
+        }
+
+    /*jslint devel: true, browser: true, es5: true */
+/*global Promise */
+
+function imgLoad(url) {
+    'use strict';
+    // Create new promise with the Promise() constructor;
+    // This has as its argument a function with two parameters, resolve and reject
+    return new Promise(function (resolve, reject) {
+        // Standard XHR to load an image
+        var request = new XMLHttpRequest();
+        request.open('GET', url);
+        request.responseType = 'blob';
+        
+        // When the request loads, check whether it was successful
+        request.onload = function () {
+            if (request.status === 200) {
+                // If successful, resolve the promise by passing back the request response
+                resolve(request.response);
+            } else {
+                // If it fails, reject the promise with a error message
+                reject(new Error('Image didn\'t load successfully; error code:' + request.statusText));
+            }
+        };
+      
+        request.onerror = function () {
+            // Also deal with the case when the entire request fails to begin with
+            // This is probably a network error, so reject the promise with an appropriate message
+            reject(new Error('There was a network error.'));
+        };
+      
+        // Send the request
+        request.send();
+    });
+}
+
+async function loadImage(id) {
+    'use strict';
+    // Get a reference to the body element, and create a new image object
+    var body = document.querySelector('body'),
+        myImage = new Image();
+  
+    myImage.crossOrigin = ""; // or "anonymous"
+
+    let url = 'http://rest.kegg.jp/get/'+ id + '/image';
+    let proxy = 'https://cors-anywhere.herokuapp.com/';
+ 
+    
+    // Call the function with the URL we want to load, but then chain the
+    // promise then() method on to the end of it. This contains two callbacks
+    imgLoad(proxy + url).then(function (response) {
+        // The first runs when the promise resolves, with the request.reponse specified within the resolve() method.
+        var imageURL = window.URL.createObjectURL(response);
+        myImage.src = imageURL;
+        body.appendChild(myImage);
+        // The second runs when the promise is rejected, and logs the Error specified with the reject() method.
+    }, function (Error) {
+        console.log(Error);
+    });
+}
 
     //Formater for CONVERT. Passed as param to query
     let conv_format = async function(id:string){

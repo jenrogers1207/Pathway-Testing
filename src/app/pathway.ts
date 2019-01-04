@@ -221,7 +221,7 @@ export class Pathway {
         header.append('span').append('text').text(path.title);
        // let svg = div.append('svg');
         //let rects = svg.selectAll('rect');
-
+     
         let geneList = path.nodes.filter((d)=> d.type == 'gene');
         console.log(geneList);
 
