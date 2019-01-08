@@ -1,6 +1,7 @@
 const xhr = require('nets');
 import * as Pathway from './pathway';
 import * as d3 from 'D3';
+import { select, selectAll } from 'D3';
 
 const pathways = new Pathway.Pathway()
 
@@ -57,37 +58,6 @@ export class DataManager {
             });
     }
 
-        //Formater for GET. Passed as param to query
-        let get_image_format = async function(id:string){
-            let url = 'http://rest.kegg.jp/get/'+ id + '/image';
-            let proxy = 'https://cors-anywhere.herokuapp.com/';
-         
-            let data = xhr({
-                    url: proxy + url,
-                    method: 'GET',
-                    encoding: undefined,
-                    headers: {
-                        "Content-Type": "image/png",
-                    },
-                    responseType: 'blob',
-
-                }, 
-                function done(err, resp, body){
-                    
-                    if(err){ 
-                        console.error(err); 
-                        return;
-                    }
-                    console.log(resp.url);
-                   
-                        var img = document.createElement('img');
-                       // img.src = window.URL.createObjectURL(resp.url);
-                        img.src = resp.url;
-                        document.getElementById("pathway-render").appendChild(img);
-                    
-                });
-        }
-
     /*jslint devel: true, browser: true, es5: true */
 /*global Promise */
 
@@ -141,7 +111,7 @@ async function loadImage(id) {
         // The first runs when the promise resolves, with the request.reponse specified within the resolve() method.
         var imageURL = window.URL.createObjectURL(response);
         myImage.src = imageURL;
-        body.appendChild(myImage);
+        document.getElementById('pathway-render').appendChild(myImage);
         // The second runs when the promise is rejected, and logs the Error specified with the reject() method.
     }, function (Error) {
         console.log(Error);
@@ -210,7 +180,7 @@ async function loadImage(id) {
         let divLink = d3.select(document.getElementById('linked-pathways'));
         divLink.selectAll('*').remove();
 
-        divLink.append('div').append('h2').text('Associated Pathways: ');
+        divLink.append('div').append('h3').text('Associated Pathways: ');
         if(idArray.length > 1){
             divID.append('span').append('text').text('Search ID:')
             divID.append('text').text(idArray[0] + '   ');
@@ -225,7 +195,13 @@ async function loadImage(id) {
         div = divEnter.merge(div);
 
         let text = divEnter.append('text').text(d=> d);
-        text.on('click', (id)=> get_format(id, id_link));
+        text.on('click', (id,i,g)=> {
+         
+            let toUnclass = d3.selectAll('.selected_link');
+            console.log(toUnclass);
+            toUnclass.classed('selected_link', false);
+            d3.select(g[i]).classed('selected_link', true);
+            get_format(id, id_link)});
         
     }
 

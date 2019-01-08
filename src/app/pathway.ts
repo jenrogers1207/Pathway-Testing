@@ -160,9 +160,9 @@ export class Pathway {
         let pathway = new PathwayObject();
 
         pathway.selectedId = selectedId;
-        console.log(selectedId);
+        
         let pathwayInfo = xmlData.getElementsByTagName('pathway');
-        console.log(xmlData);
+      
         let pathName = pathwayInfo[0].attributes[0].nodeValue;
         let pathTitle = pathwayInfo[0].attributes[3].nodeValue;
         pathway.id = pathName;
@@ -215,18 +215,17 @@ export class Pathway {
        
         let wrap = d3.select(document.getElementById('pathway-render'));
         wrap.selectAll('*').remove();
+        let assocGenes = d3.select(document.getElementById('assoc-genes'));
+        assocGenes.selectAll('*').remove();
 
         let div = wrap.append('div').attr('id', path.id).classed('pathway', true);
-        let header = div.append('h3').text(path.id + ': ');
+        let header = div.append('h3').text(path.id + ': ').classed('selected_link', true);
         header.append('span').append('text').text(path.title);
-       // let svg = div.append('svg');
-        //let rects = svg.selectAll('rect');
      
         let geneList = path.nodes.filter((d)=> d.type == 'gene');
-        console.log(geneList);
 
-        div.append('h4').text('Associated Genes: ');
-        let geneDivs = div.selectAll('.geneNames').data(geneList);
+        assocGenes.append('h4').text('Associated Genes: ');
+        let geneDivs = assocGenes.selectAll('.geneNames').data(geneList);
         let geneEnter = geneDivs.enter().append('div').classed('geneNames', true);
         geneDivs.exit().remove();
         geneDivs = geneEnter.merge(geneDivs);
@@ -235,6 +234,5 @@ export class Pathway {
         selectedGene.classed('selected', true);
 
         let chosen = path.nodes.filter((g)=> g.keggId.includes(path.selectedId));
-        console.log(chosen);
     }
 }

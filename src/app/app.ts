@@ -14,6 +14,8 @@ function searchById() {
     
     d3.select('#linked-pathways').selectAll('*').remove();
     d3.select('#pathway-render').selectAll('*').remove();
+    d3.select('#assoc-genes').selectAll('*').remove();
+    d3.select('#gene-id').selectAll('*').remove();
 
     const value = (<HTMLInputElement>document.getElementById('search-bar')).value;
     if(value.includes(':')){
@@ -43,8 +45,6 @@ function searchById() {
                 }
          
                 let json = JSON.parse(resp.rawRequest.responseText);
-                
-                
                 dm.CONVERT('ncbi-geneid:'+json.hits[0]._id);
             });
     }
